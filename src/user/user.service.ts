@@ -20,4 +20,8 @@ export class UserService {
     getUserAll(): User[] {
         return users;
     }
+
+    getUserOne(id: number): User {
+        return users.find((data) => data.id == id);
+    }
 }
