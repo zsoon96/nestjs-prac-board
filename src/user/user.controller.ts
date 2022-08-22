@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
 import {UserService} from "./user.service";
 
 @Controller('user')
@@ -24,10 +24,18 @@ export class UserController {
     getUserAll(): User[] {
         return this.userService.getUserAll();
     }
+
     // 단일 유저 조회 api
     @Get('/user/:id')
     getUserOne(@Param('id') id: number): User {
         return this.userService.getUserOne(id);
     }
+
+    // 전체 유저 수정 api
+    @Put('/user/update')
+    setAllUser(@Body('id') id:number, @Body('name') name:string): User[] {
+        return this.userService.setAllUser(id,name);
+    }
+
 
 }
