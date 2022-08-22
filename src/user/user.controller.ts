@@ -18,4 +18,11 @@ export class UserController {
     creteUser(@Body('id') id: number, @Body('name') name: string): User[] {
         return this.userService.creteUser(id, name);
     }
+
+    // 전체 유저 조회 api
+    @Get('/user_all')
+    getUserAll(): User[] {
+        return this.userService.getUserAll();
+    }
+
 }

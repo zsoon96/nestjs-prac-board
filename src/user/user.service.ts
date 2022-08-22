@@ -16,4 +16,8 @@ export class UserService {
     creteUser(id: number, name: string): User[] {
         return users.concat({ id, name }); // concat(): 배열 합치는 함수
     }
+
+    getUserAll(): User[] {
+        return users;
+    }
 }
