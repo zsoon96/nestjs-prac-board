@@ -39,4 +39,11 @@ export class UserService {
             }
         })
     }
+
+    setUser(id: number, name: string): User {
+        return users.find((data) => {
+            if (data.id == id)
+                return data.name = name;
+        })
+    }
 }
