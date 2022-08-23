@@ -46,4 +46,8 @@ export class UserService {
                 return data.name = name;
         })
     }
+
+    deleteUser(id: number): User[] {
+        return users.filter((data) => data.id != id);
+    }
 }
