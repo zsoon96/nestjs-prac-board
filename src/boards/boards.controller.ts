@@ -1,6 +1,7 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
+import {CreateBoardDto} from "./dto/create-board.dto";
 
 @Controller('boards')
 export class BoardsController {
@@ -10,6 +11,12 @@ export class BoardsController {
     @Get()
     getAllBoard(): Promise<Board[]> {
         return this.boardsService.getAllBoard();
+    }
+
+    // 게시글 생성
+    @Post()
+    createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
+        return this.boardsService.createBoard(createBoardDto);
     }
 
     // 게시글 단일 조회
