@@ -1,7 +1,8 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Post} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
+import {BoardStatus} from "./board-status.enum";
 
 @Controller('boards')
 export class BoardsController {
@@ -23,6 +24,15 @@ export class BoardsController {
     @Get('/:id')
     getBoardById(@Param('id')id:number) : Promise<Board> {
         return this.boardsService.getBoardById(id);
+    }
+
+    // 게시글 공개여부 상태 수정
+    @Patch('/:id/status')
+    updateBoardStatus(
+        @Param('id') id: number,
+        @Body('status') status: BoardStatus
+    ): Promise<Board> {
+        return this.boardsService.updateBoardStatus(id, status);
     }
 
 }
