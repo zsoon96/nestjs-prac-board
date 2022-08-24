@@ -1,4 +1,4 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Param} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 
@@ -6,9 +6,16 @@ import {Board} from "./board.entity";
 export class BoardsController {
     constructor(private boardsService: BoardsService) {}
 
-    // 게시물 전체 조회
+    // 게시글 전체 조회
     @Get()
     getAllBoard(): Promise<Board[]> {
         return this.boardsService.getAllBoard();
     }
+
+    // 게시글 단일 조회
+    @Get('/:id')
+    getBoardById(@Param('id')id:number) : Promise<Board> {
+        return this.boardsService.getBoardById(id);
+    }
+
 }
