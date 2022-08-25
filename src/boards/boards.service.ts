@@ -39,4 +39,16 @@ export class BoardsService {
 
         return board;
     }
+
+    // 게시글 내용 수정 처리 로직
+    async updateBoardContent(id: number, title:string, description:string) : Promise<Board> {
+        const board = await this.boardRepository.findOneBy({id});
+
+        board.title = title;
+        board.description = description;
+
+        await this.boardRepository.save(board);
+
+        return board;
+    }
 }
