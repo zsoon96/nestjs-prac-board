@@ -51,4 +51,9 @@ export class BoardsService {
 
         return board;
     }
+
+    // 게시글 삭제 처리 로직
+    async deleteBoard(id: number) : Promise<void> {
+        await this.boardRepository.delete(id);
+    }
 }

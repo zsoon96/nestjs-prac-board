@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Patch, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Put} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
@@ -36,7 +36,7 @@ export class BoardsController {
     }
 
     // 게시글 내용 수정
-    @Put(':/id/content')
+    @Put('/:id/content')
     updateBoardContent(
         @Param('id') id: number,
         @Body('title') title: string,
@@ -44,4 +44,9 @@ export class BoardsController {
         return this.boardsService.updateBoardContent(id, title, description);
     }
 
+    // 게시글 삭제
+    @Delete('/:id')
+    deleteBoard(@Param('id') id: number) : Promise<void> {
+        return this.boardsService.deleteBoard(id);
+    }
 }
