@@ -31,21 +31,22 @@ export class BoardsService {
     }
 
     // 게시글 공개여부 상태 수정 처리 로직
-    async updateBoardStatus(id:number, status:BoardStatus): Promise<Board> {
-        const board = await this.getBoardById(id);
-
-        board.status = status;
-        await this.boardRepository.save(board);
-
-        return board;
-    }
+    // async updateBoardStatus(id:number, status:BoardStatus): Promise<Board> {
+    //     const board = await this.getBoardById(id);
+    //
+    //     board.status = status;
+    //     await this.boardRepository.save(board);
+    //
+    //     return board;
+    // }
 
     // 게시글 내용 수정 처리 로직
-    async updateBoardContent(id: number, title:string, description:string) : Promise<Board> {
+    async updateBoardContent(id: number, title:string, description:string, status: BoardStatus) : Promise<Board> {
         const board = await this.boardRepository.findOneBy({id});
 
         board.title = title;
         board.description = description;
+        board.status = status;
 
         await this.boardRepository.save(board);
 

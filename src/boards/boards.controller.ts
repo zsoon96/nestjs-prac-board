@@ -27,21 +27,22 @@ export class BoardsController {
     }
 
     // 게시글 공개여부 상태 수정
-    @Patch('/:id/status')
-    updateBoardStatus(
-        @Param('id') id: number,
-        @Body('status') status: BoardStatus
-    ): Promise<Board> {
-        return this.boardsService.updateBoardStatus(id, status);
-    }
+    // @Patch('/:id/status')
+    // updateBoardStatus(
+    //     @Param('id') id: number,
+    //     @Body('status') status: BoardStatus
+    // ): Promise<Board> {
+    //     return this.boardsService.updateBoardStatus(id, status);
+    // }
 
-    // 게시글 내용 수정
+    // 게시글 내용 수정 (공개여부 상태 수정 합)
     @Put('/:id/content')
     updateBoardContent(
         @Param('id') id: number,
         @Body('title') title: string,
-        @Body('description') description: string) : Promise<Board> {
-        return this.boardsService.updateBoardContent(id, title, description);
+        @Body('description') description: string,
+        @Body('status') status: BoardStatus) : Promise<Board> {
+        return this.boardsService.updateBoardContent(id, title, description, status);
     }
 
     // 게시글 삭제
