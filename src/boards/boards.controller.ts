@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Put, UsePipes, ValidationPipe} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
@@ -16,6 +16,7 @@ export class BoardsController {
 
     // 게시글 생성
     @Post()
+    @UsePipes(ValidationPipe) // Pipe를 통한 유효성 검사(핸들러 레벨)
     createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
         return this.boardsService.createBoard(createBoardDto);
     }
