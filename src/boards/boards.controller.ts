@@ -3,6 +3,7 @@ import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
 import {BoardStatus} from "./board-status.enum";
+import {BoardStatusValidationPipe} from "./pipes/board-status-validation.pipe";
 
 @Controller('boards')
 export class BoardsController {
@@ -16,7 +17,7 @@ export class BoardsController {
 
     // 게시글 생성
     @Post()
-    @UsePipes(ValidationPipe) // Pipe를 통한 유효성 검사(핸들러 레벨)
+    @UsePipes(ValidationPipe) // built-in Pipe(ValidationPipe)를 통한 유효성 검사(핸들러 레벨)
     createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
         return this.boardsService.createBoard(createBoardDto);
     }
@@ -42,7 +43,8 @@ export class BoardsController {
         @Param('id') id: number,
         @Body('title') title: string,
         @Body('description') description: string,
-        @Body('status') status: BoardStatus) : Promise<Board> {
+        // custom Pipe(BoardStatusValidationPipe)를 통한 유효성 검사(파라미터 레벨)
+        @Body('status', BoardStatusValidationPipe) status: BoardStatus) : Promise<Board> {
         return this.boardsService.updateBoardContent(id, title, description, status);
     }
 
