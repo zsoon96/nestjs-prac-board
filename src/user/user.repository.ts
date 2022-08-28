@@ -3,14 +3,19 @@ import {Repository} from "typeorm";
 import {User} from "./user.entity";
 import {AuthCredentialsDto} from "./dto/create-user.dto";
 import {ConflictException, InternalServerErrorException} from "@nestjs/common";
+import * as bcrypt from 'bcryptjs';
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
     async createUser(authCredentialsDto: AuthCredentialsDto) {
         // dto에서 받은 값 꺼내주고
         const { username, email, password } = authCredentialsDto
-        // 새로운 user 객체에 담아준 다음
-        const user = this.create( {username, email, password} )
+
+        // 비밀번호 암호화 (솔트+비밀번호를 통한 보안성 강화)
+        const salt = await bcrypt.getSalt()
+        const hashedPassword = await bcrypt.hash(password, salt)
+        // 새로운 user 객체에 해당 정보를 담아준 다음
+        const user = this.create( {username, email, password: hashedPassword} )
 
         try {
             // 저장
