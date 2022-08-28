@@ -1,10 +1,18 @@
-import {Controller, Get, Post, Body, Param, Put, Patch, Delete} from '@nestjs/common';
+import {Controller, Get, Post, Body, Param, Put, Patch, Delete, ValidationPipe} from '@nestjs/common';
 import {UserService} from "./user.service";
+import {AuthCredentialsDto} from "./dto/create-user.dto";
 
 @Controller('user')
 // 의존성 주입
 export class UserController {
     constructor(private readonly userService: UserService) {
+    }
+
+    // 회원가입 api
+    @Post('/signup')
+    signUp (@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto) : string {
+        this.userService.signUp(authCredentialsDto)
+        return '회원가입 성공!'
     }
 
     // api 테스트

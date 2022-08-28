@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {UserRepository} from "./user.repository";
+import {AuthCredentialsDto} from "./dto/create-user.dto";
 
 const users: User[] = [
     { id: 1, name: '유저1'},
@@ -13,6 +14,11 @@ export class UserService {
 
     // Repository 주입
     constructor(private userRepository: UserRepository) {}
+
+    // 회원가입 처리 로직
+    async signUp(authCredentialsDto: AuthCredentialsDto) {
+        return this.userRepository.createUser(authCredentialsDto)
+    }
 
     getHelloSoon(): string {
         return 'Hello soon!!';
