@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import {UserRepository} from "./user.repository";
 
 const users: User[] = [
     { id: 1, name: '유저1'},
@@ -9,6 +10,10 @@ const users: User[] = [
 
 @Injectable()
 export class UserService {
+
+    // Repository 주입
+    constructor(private userRepository: UserRepository) {}
+
     getHelloSoon(): string {
         return 'Hello soon!!';
     }
