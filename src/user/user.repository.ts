@@ -29,4 +29,17 @@ export class UserRepository extends Repository<User> {
             }
         }
     }
+
+    // 이메일로 유저정보 찾기
+    public async findOneByEmail(email: string) {
+        const qb = this
+            .createQueryBuilder('User')
+            // .leftJoinAndSelect('User.userAuth', 'userAuth')
+            // .leftJoinAndSelect('User.userProfile', 'userProfile')
+        console.log(qb)
+
+        qb.andWhere('User.email = :email', { email })
+
+        return qb.getOne()
+    }
 }

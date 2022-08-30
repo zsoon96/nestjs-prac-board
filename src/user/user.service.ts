@@ -27,7 +27,7 @@ export class UserService {
     // 로그인 처리 로직
     async signIn(LoginReqDto: LoginReqDto) : Promise<{ accessToken: string}>{
         const {email, password} = LoginReqDto
-        const user = await this.userRepository.findOneBy({email})
+        const user = await this.userRepository.findOneByEmail(email)
 
         if ( user && await bcrypt.compare(password, user.password)) {
             // 유저 토큰 생성 ( secret key + payload)
