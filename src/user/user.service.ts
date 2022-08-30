@@ -1,9 +1,9 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {UserRepository} from "./user.repository";
 import {AuthCredentialsDto} from "./dto/create-user.dto";
-import {User} from "./user.entity";
 import {LoginReqDto} from "./dto/login-user.dto";
 import * as bcrypt from 'bcryptjs';
+import {JwtService} from "@nestjs/jwt";
 
 // const users: User[] = [
 //     { id: 1, name: '유저1'},
@@ -16,7 +16,8 @@ import * as bcrypt from 'bcryptjs';
 export class UserService {
 
     // Repository 주입
-    constructor(private userRepository: UserRepository) {}
+    constructor(private userRepository: UserRepository,
+                private jwtService: JwtService) {}
 
     // 회원가입 처리 로직
     async signUp(authCredentialsDto: AuthCredentialsDto) {
@@ -24,12 +25,17 @@ export class UserService {
     }
 
     // 로그인 처리 로직
-    async signIn(LoginReqDto: LoginReqDto) : Promise<string>{
+    async signIn(LoginReqDto: LoginReqDto) : Promise<{ accessToken: string}>{
         const {email, password} = LoginReqDto
         const user = await this.userRepository.findOneBy({email})
 
         if ( user && await bcrypt.compare(password, user.password)) {
-            return '로그인 성공!'
+            // 유저 토큰 생성 ( secret key + payload)
+            const payload = { email } // jwt payload에 담을 정보
+            const accessToken = await this.jwtService.sign(payload)
+
+            // accessToken 객체로 리턴
+            return {accessToken: accessToken}
         } else {
             throw new UnauthorizedException('로그인 실패')
         }

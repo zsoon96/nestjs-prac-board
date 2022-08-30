@@ -18,7 +18,7 @@ export class UserController {
 
     // 로그인 api
     @Post('/login')
-    signIn(@Body(ValidationPipe) loginReqDto: LoginReqDto) {
+    signIn(@Body(ValidationPipe) loginReqDto: LoginReqDto): Promise<{accessToken:string}> {
         return this.userService.signIn(loginReqDto)
     }
 
