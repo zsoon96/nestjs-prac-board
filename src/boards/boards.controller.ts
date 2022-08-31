@@ -17,6 +17,7 @@ import {CreateBoardDto} from "./dto/create-board.dto";
 import {BoardStatus} from "./board-status.enum";
 import {BoardStatusValidationPipe} from "./pipes/board-status-validation.pipe";
 import {AuthGuard} from "@nestjs/passport";
+import {GetUser} from "../user/get-user.decorator";
 
 @Controller('boards')
 @UseGuards(AuthGuard()) // 게시물 접근권한 부여(인증된 유저만 접근)
@@ -32,8 +33,9 @@ export class BoardsController {
     // 게시글 생성
     @Post()
     @UsePipes(ValidationPipe) // built-in Pipe(ValidationPipe)를 통한 유효성 검사(핸들러 레벨)
-    createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
-        return this.boardsService.createBoard(createBoardDto);
+    // @GetUser를 통해 게시물 생성 시, 유저 정보 추가
+    createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() user: User): Promise<Board> {
+        return this.boardsService.createBoard(createBoardDto, user);
     }
 
     // 게시글 단일 조회

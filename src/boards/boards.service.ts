@@ -15,8 +15,8 @@ export class BoardsService {
     }
 
     // 게시글 생성 처리 로직
-    async createBoard(createBoardDto: CreateBoardDto) : Promise<Board> {
-        return this.boardRepository.createBoard(createBoardDto);
+    async createBoard(createBoardDto: CreateBoardDto, user: User) : Promise<Board> {
+        return this.boardRepository.createBoard(createBoardDto, user);
     }
 
     // 게시글 단일 조회 처리 로직
