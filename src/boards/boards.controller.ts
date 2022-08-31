@@ -1,11 +1,25 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Put, UsePipes, ValidationPipe} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Put,
+    UseGuards,
+    UsePipes,
+    ValidationPipe
+} from '@nestjs/common';
 import {BoardsService} from "./boards.service";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
 import {BoardStatus} from "./board-status.enum";
 import {BoardStatusValidationPipe} from "./pipes/board-status-validation.pipe";
+import {AuthGuard} from "@nestjs/passport";
 
 @Controller('boards')
+@UseGuards(AuthGuard()) // 게시물 접근권한 부여(인증된 유저만 접근)
 export class BoardsController {
     constructor(private boardsService: BoardsService) {}
 
