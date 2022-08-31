@@ -1,9 +1,7 @@
 import {PassportStrategy} from "@nestjs/passport";
-import {Strategy} from "passport";
 import {Injectable, UnauthorizedException} from "@nestjs/common";
-import {InjectRepository} from "@nestjs/typeorm";
 import {UserRepository} from "./user.repository";
-import {ExtractJwt} from "passport-jwt";
+import {ExtractJwt, Strategy} from "passport-jwt";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             // 토큰이 유효한지 확인하기 위한 시크릿 키
-            secretOrKey: '서버의 시크릿 키',
+            secretOrKey: 'admin',
             // 토큰을 받아올 경로
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
         });
@@ -21,13 +19,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // 토큰 확인이 완료되면, payload에 있는 유저의 email로 조회 후, 일치하는 정보가 있으면 유저 객체를 반환
     async validate(payload) {
-        const {email} = payload
-        const user: User = await this.userRepository.findOneByEmail(email)
+        const { email } = payload
+        const user = await this.userRepository.findOneByEmail(email)
 
         if (!user) {
             throw new UnauthorizedException();
         }
-
+        // 요청에 해당 객체 정보(id,username,password) 담아주기 > @UseGuard(인증 미들웨어) & @GetUser(커스텀 데코레이터) 함께 사용해야 올바르게 객체 정보 들어감
         return user
     }
 }

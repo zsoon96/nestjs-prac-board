@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Body, Param, Put, Patch, Delete, ValidationPipe, UseGuards} from '@nestjs/common';
+import {Controller, Get, Post, Body, Param, Put, Patch, Delete, ValidationPipe, UseGuards, Req} from '@nestjs/common';
 import {UserService} from "./user.service";
 import {AuthCredentialsDto} from "./dto/create-user.dto";
 import {LoginReqDto} from "./dto/login-user.dto";
@@ -19,11 +19,17 @@ export class UserController {
 
     // 로그인 api
     @Post('/login')
+    signIn(@Body(ValidationPipe) loginReqDto: LoginReqDto): Promise<{accessToken:string}> {
+        return this.userService.signIn(loginReqDto)
+    }
+
+    // 요청 시, 객체 정보도 함께 담아서 요청되는지 확인 api
     // UseGuards안에 @nestjs/passport에서 가져온 AuthGuard()를 이용해 요청 시, 유저 정보도 같이 담아줌! (JwtStrategy로만 유저 객체를 불러올 수 없음)
     // 유저 정보를 담아 요청을 하게 되면, 해당 정보를 통해 유저의 접근권한 등에 알맞는 처리를 할 수 있음
     @UseGuards(AuthGuard())
-    signIn(@Body(ValidationPipe) loginReqDto: LoginReqDto): Promise<{accessToken:string}> {
-        return this.userService.signIn(loginReqDto)
+    @Post('/test')
+    getTest(@Req() req) {
+        console.log(req)
     }
 
     // api 테스트

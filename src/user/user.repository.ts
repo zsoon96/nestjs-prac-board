@@ -12,7 +12,7 @@ export class UserRepository extends Repository<User> {
         const { username, email, password } = authCredentialsDto
 
         // 비밀번호 암호화 (솔트+비밀번호를 통한 보안성 강화)
-        const salt = await bcrypt.getSalt()
+        const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(password, salt)
         // 새로운 user 객체에 해당 정보를 담아준 다음
         const user = this.create( {username, email, password: hashedPassword} )
@@ -31,15 +31,11 @@ export class UserRepository extends Repository<User> {
     }
 
     // 이메일로 유저정보 찾기
-    public async findOneByEmail(email: string) {
-        const qb = this
-            .createQueryBuilder('User')
-            // .leftJoinAndSelect('User.userAuth', 'userAuth')
-            // .leftJoinAndSelect('User.userProfile', 'userProfile')
-        console.log(qb)
-
-        qb.andWhere('User.email = :email', { email })
-
-        return qb.getOne()
+    async findOneByEmail(email: any) {
+        return await this.findOne({
+            where: {
+                email: email,
+            },
+        })
     }
 }
