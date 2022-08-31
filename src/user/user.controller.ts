@@ -3,6 +3,7 @@ import {UserService} from "./user.service";
 import {AuthCredentialsDto} from "./dto/create-user.dto";
 import {LoginReqDto} from "./dto/login-user.dto";
 import { AuthGuard } from '@nestjs/passport';
+import {GetUser} from "./get-user.decorator";
 
 @Controller('user')
 // 의존성 주입
@@ -28,8 +29,8 @@ export class UserController {
     // 유저 정보를 담아 요청을 하게 되면, 해당 정보를 통해 유저의 접근권한 등에 알맞는 처리를 할 수 있음
     @UseGuards(AuthGuard())
     @Post('/test')
-    getTest(@Req() req) {
-        console.log(req)
+    getTest(@GetUser() user:User) {
+        console.log(user)
     }
 
     // api 테스트
