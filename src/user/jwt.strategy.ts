@@ -1,7 +1,12 @@
+// import하는 모듈 확인 잘하기 !
 import {PassportStrategy} from "@nestjs/passport";
 import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {UserRepository} from "./user.repository";
 import {ExtractJwt, Strategy} from "passport-jwt";
+
+import * as config from 'config';
+
+const jwtConfig = config.get('jwt')
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -11,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             // 토큰이 유효한지 확인하기 위한 시크릿 키
-            secretOrKey: 'admin',
+            secretOrKey: jwtConfig.secret,
             // 토큰을 받아올 경로
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
         });

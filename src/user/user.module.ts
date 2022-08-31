@@ -6,14 +6,17 @@ import {UserRepository} from "./user.repository";
 import {JwtModule} from "@nestjs/jwt";
 import {PassportModule} from "@nestjs/passport";
 import { JwtStrategy } from './jwt.strategy';
+import * as config from 'config';
+
+const jwtConfig = config.get('jwt')
 
 @Module({
   // passport 모듈은 JWT를 이용해서 인증 처리하는 등의 과정을 훨씬 수월하게 도와주는 역할
   imports: [ PassportModule.register({defaultStrategy:'jwt'}),
       JwtModule.register({
-    secret: 'admin',
+    secret: jwtConfig.secret,
     signOptions: {
-      expiresIn: 3600 // 1h
+      expiresIn: jwtConfig.expiresIn
     }
   }),
       CustomTypeOrmModule.forCustomRepository([UserRepository])],
