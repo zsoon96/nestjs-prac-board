@@ -2,7 +2,7 @@ import {
     Body,
     Controller,
     Delete,
-    Get,
+    Get, Logger,
     Param,
     Patch,
     Post,
@@ -22,6 +22,8 @@ import {GetUser} from "../user/get-user.decorator";
 @Controller('boards')
 @UseGuards(AuthGuard()) // 게시물 접근권한 부여(인증된 유저만 접근)
 export class BoardsController {
+    // 로거 객체
+    private logger = new Logger('BoardsController');
     constructor(private boardsService: BoardsService) {}
 
     // 게시글 전체 조회
@@ -35,6 +37,9 @@ export class BoardsController {
     @UsePipes(ValidationPipe) // built-in Pipe(ValidationPipe)를 통한 유효성 검사(핸들러 레벨)
     // @GetUser를 통해 게시물 생성 시, 유저 정보 추가
     createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() user: User): Promise<Board> {
+        // verbose: 응용 프로그램 동작에 대한 통찰력을 제공하는 정보 로깅 레벨 (운영자용)
+        // @ts-ignore
+        this.logger.verbose(`User ${user.username} trying to create board!, Payload ${JSON.stringify(createBoardDto)}`)
         return this.boardsService.createBoard(createBoardDto, user);
     }
 
