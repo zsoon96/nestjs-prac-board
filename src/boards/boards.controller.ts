@@ -70,9 +70,9 @@ export class BoardsController {
         return this.boardsService.updateBoardContent(id, title, description, status);
     }
 
-    // 게시글 삭제
+    // 게시글 삭제 (작성자만)
     @Delete('/:id')
-    deleteBoard(@Param('id') id: number) : Promise<void> {
-        return this.boardsService.deleteBoard(id);
+    deleteBoard(@Param('id') id: number, @GetUser() user:User) : Promise<void> {
+        return this.boardsService.deleteBoard(id, user);
     }
 }

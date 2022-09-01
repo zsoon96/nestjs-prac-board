@@ -64,14 +64,14 @@ export class BoardsService {
         return board;
     }
 
-    // 게시글 삭제 처리 로직
-    async deleteBoard(id: number) : Promise<void> {
+    // 게시글 삭제 처리 로직 (작성자만)
+    async deleteBoard(id: number, user:User) : Promise<void> {
         // await this.boardRepository.delete(id);
-        const result = await this.boardRepository.delete(id);
+        const result = await this.boardRepository.delete({id, user});
 
         // 게시글 유무 검증
         if (result.affected === 0) {
-            throw new NotFoundException('해당 게시글이 존재하지 않습니다.');
+            throw new NotFoundException('작성자만 삭제 가능합니다.');
         }
     }
 }
