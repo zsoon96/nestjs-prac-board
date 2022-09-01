@@ -30,6 +30,17 @@ export class BoardsService {
         return board;
     }
 
+    // 본인이 작성한 게시글만 조회하는 처리 로직 (404)
+    async getBoardByUser(user: User) : Promise<Board[]> {
+        // 복잡한 쿼리가 필요한 경우, QueryBuilder를 통해 해결
+        const query = this.boardRepository.createQueryBuilder('board')
+        // board의 userId가 파라미터로 받은 user.id와 같은 것만 찾는 쿼리
+        query.where ('board.userId = :userId', {userId: user.id})
+        // 찾은 값 boards에 담아줘서 리턴
+        const boards = await query.getMany()
+        return boards
+    }
+
     // 게시글 공개여부 상태 수정 처리 로직
     // async updateBoardStatus(id:number, status:BoardStatus): Promise<Board> {
     //     const board = await this.getBoardById(id);

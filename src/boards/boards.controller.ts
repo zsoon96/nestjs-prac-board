@@ -44,6 +44,12 @@ export class BoardsController {
         return this.boardsService.getBoardById(id);
     }
 
+    // 본인이 작성한 게시글만 조회
+    @Get('/mine')
+    getBoardByUser(@GetUser() user:User) : Promise<Board[]> {
+        return this.boardsService.getBoardByUser(user)
+    }
+
     // 게시글 공개여부 상태 수정
     // @Patch('/:id/status')
     // updateBoardStatus(

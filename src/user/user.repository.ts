@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User> {
             await this.save(user)
         } catch (error) {
             // 이메일, 유저명 중복 시 예외 처리 (에러값/응답값 확인 필요)
-            if ( error === 1062 ) {
+            if ( error.errno === 1062 ) {
                throw new ConflictException('이미 존재하는 이메일, 유저명입니다.')
             } else {
                 throw new InternalServerErrorException()
