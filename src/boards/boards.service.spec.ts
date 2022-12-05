@@ -89,4 +89,17 @@ describe('BoardService',  () => {
         // then
         expect(result).toEqual(newBoard);
     })
+
+
+    it('게시글 전체조회 성공', async () => {
+        // given
+        customBoardRepository.find.mockResolvedValue([])
+
+        // when
+        const result = await service.getAllBoard()
+
+        // then
+        expect(customBoardRepository.find).toBeCalledTimes(1)
+        expect(result).toEqual([])
+    })
 })
