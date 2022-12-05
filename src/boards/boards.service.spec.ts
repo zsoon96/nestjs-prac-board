@@ -10,6 +10,10 @@ const mockRepository = () => ({
     save: jest.fn(),
 })
 
+const mockCustomRepository = () => ({
+    createBoard: jest.fn()
+})
+
 // MockRepository 타입 정의
     // Partial: 타입 T의 모든 요소를 optional하게 함
     // Record: 타입 T의 모든 K의 집합으로 타입을 만들어줌
@@ -17,11 +21,13 @@ const mockRepository = () => ({
     // jest.Mock: key를 다 가짜로 만들어줌
     // type MockRepository<T=any>: 이를 type으로 정의해줌
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>
+type MockCustomRepository = Partial<Record<keyof BoardRepository, jest.Mock>>
 
 describe('BoardService',  () => {
     // 사용할 클래스 선언
     let service: BoardsService
     let boardRepository: MockRepository<BoardRepository>
+    let customBoardRepository: MockCustomRepository;
 
     // 테스트 실행 전 의존성 주입
     beforeEach(async () => {
@@ -33,12 +39,17 @@ describe('BoardService',  () => {
                     provide: getRepositoryToken(BoardRepository),
                     useValue: mockRepository()
                 },
+                {
+                    provide: BoardRepository,
+                    useValue: mockCustomRepository
+                }
             ]
         }).compile()
 
         // 선언한 클래스에 모듈 주입
         service = module.get<BoardsService>(BoardsService)
         boardRepository = module.get<MockRepository<BoardRepository>>(getRepositoryToken(BoardRepository))
+        customBoardRepository = module.get(BoardRepository)
     })
 
     it ('게시글 등록 성공', async () => {
@@ -62,13 +73,16 @@ describe('BoardService',  () => {
         }
 
         // 가짜 데이터 주입
+        customBoardRepository.createBoard.mockResolvedValue(
+            { title: createDto.title, description: createDto.description, user: user}
+        )
         boardRepository.create.mockResolvedValue(newBoard)
         boardRepository.save.mockResolvedValue(newBoard)
 
         // when
         const result = await service.createBoard(createDto, user)
 
-        //then
+        // then
         expect(result).toEqual(newBoard);
     })
 })
