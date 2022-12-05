@@ -1,17 +1,19 @@
-import {Repository} from "typeorm";
 import {Test, TestingModule} from "@nestjs/testing";
 import {BoardsService} from "./boards.service";
-import {getRepositoryToken} from "@nestjs/typeorm";
 import {BoardRepository} from "./board.repository";
 
 // repository 관련 가짜 함수 정의
-const mockRepository = () => ({
-    create: jest.fn(),
-    save: jest.fn(),
-})
+// const mockRepository = () => ({
+//     create: jest.fn(),
+//     save: jest.fn(),
+//     find: jest.fn(),
+// })
 
 const mockCustomRepository = () => ({
-    createBoard: jest.fn()
+    createBoard: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn()
 })
 
 // MockRepository 타입 정의
@@ -20,14 +22,14 @@ const mockCustomRepository = () => ({
     // keyof Repository<T>: Repository의 모든 method key를 불러옴
     // jest.Mock: key를 다 가짜로 만들어줌
     // type MockRepository<T=any>: 이를 type으로 정의해줌
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>
+// type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>
 type MockCustomRepository = Partial<Record<keyof BoardRepository, jest.Mock>>
 
 describe('BoardService',  () => {
     // 사용할 클래스 선언
     let service: BoardsService
-    let boardRepository: MockRepository<BoardRepository>
     let customBoardRepository: MockCustomRepository;
+    // let boardRepository: MockRepository<BoardRepository>
 
     // 테스트 실행 전 의존성 주입
     beforeEach(async () => {
@@ -36,20 +38,20 @@ describe('BoardService',  () => {
             providers: [
                 BoardsService,
                 {
-                    provide: getRepositoryToken(BoardRepository),
-                    useValue: mockRepository()
-                },
-                {
                     provide: BoardRepository,
-                    useValue: mockCustomRepository
-                }
+                    useValue: mockCustomRepository()
+                },
+                // {
+                //     provide: getRepositoryToken(BoardRepository),
+                //     useValue: mockRepository()
+                // }
             ]
         }).compile()
 
         // 선언한 클래스에 모듈 주입
         service = module.get<BoardsService>(BoardsService)
-        boardRepository = module.get<MockRepository<BoardRepository>>(getRepositoryToken(BoardRepository))
         customBoardRepository = module.get(BoardRepository)
+        // boardRepository = module.get<MockRepository<BoardRepository>>(getRepositoryToken(BoardRepository))
     })
 
     it ('게시글 등록 성공', async () => {
@@ -73,11 +75,13 @@ describe('BoardService',  () => {
         }
 
         // 가짜 데이터 주입
-        customBoardRepository.createBoard.mockResolvedValue(
-            { title: createDto.title, description: createDto.description, user: user}
-        )
-        boardRepository.create.mockResolvedValue(newBoard)
-        boardRepository.save.mockResolvedValue(newBoard)
+        customBoardRepository.createBoard.mockResolvedValue(newBoard)
+        // customBoardRepository.createBoard.mockResolvedValue(
+        //     { title: createDto.title, description: createDto.description, user: user}
+        // )
+
+        // customBoardRepository.create.mockResolvedValue(newBoard)
+        // customBoardRepository.save.mockResolvedValue(newBoard)
 
         // when
         const result = await service.createBoard(createDto, user)
