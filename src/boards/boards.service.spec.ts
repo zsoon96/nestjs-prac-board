@@ -1,6 +1,10 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {BoardsService} from "./boards.service";
 import {BoardRepository} from "./board.repository";
+import {plainToInstance} from "class-transformer";
+import {CreateBoardDto} from "./dto/create-board.dto";
+import {validate} from "class-validator";
+import {stringify} from "ts-jest";
 
 // repository 관련 가짜 함수 정의
 // const mockRepository = () => ({
@@ -88,6 +92,31 @@ describe('BoardService',  () => {
 
         // then
         expect(result).toEqual(newBoard);
+    })
+
+    // controller에 적용 후 테스트 확인
+    it('title 유효성 검사', async () => {
+        // given
+        const createDto = {
+            title: undefined,
+            description: '내용',
+        }
+
+        // Dto 객체로 변환
+        const transformDto = plainToInstance(CreateBoardDto, createDto)
+
+        // const user = {
+        //     id: 1,
+        //     name: 'test'
+        // }
+
+        // when
+        const errors = await validate(transformDto)
+        // await service.createBoard(createDto, user)
+
+        // then
+        expect(errors.length).not.toBe(0)
+        expect(stringify(errors)).toContain('title should not be empty')
     })
 
 
