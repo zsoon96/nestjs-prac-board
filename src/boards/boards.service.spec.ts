@@ -18,7 +18,8 @@ const mockCustomRepository = () => ({
     create: jest.fn(),
     save: jest.fn(),
     getAllBoard: jest.fn(),
-    find: jest.fn()
+    find: jest.fn(),
+    findOneBy: jest.fn()
 })
 
 // MockRepository 타입 정의
@@ -169,6 +170,41 @@ describe('BoardService',  () => {
             } catch(err) {
                 expect(err.status).toBe(404)
                 expect(err.response.message).toBe('존재하는 게시글이 없습니다.')
+            }
+        })
+    })
+
+    describe('getBoardById', () => {
+        const boardId = 1
+
+        const mockBoard = {
+            id: 1,
+            title: '제목',
+            description: '내용',
+            user: {
+                id: 1,
+                name: '이름'
+            }
+        }
+
+        it('게시글 상세조회 성공', async () => {
+            customBoardRepository.findOneBy.mockResolvedValue(mockBoard)
+
+            const result = await service.getBoardById(boardId)
+
+            expect(customBoardRepository.findOneBy).toBeCalledTimes(1)
+            expect(result).toEqual(mockBoard)
+        })
+
+        it('게시글 상세조회 실패', async () => {
+            customBoardRepository.findOneBy.mockResolvedValue(undefined)
+
+            try {
+                const result = await service.getBoardById(boardId)
+                expect(result).toBeDefined()
+            } catch (err) {
+                expect(err.status).toBe(404)
+                expect(err.response.message).toBe('해당 게시글이 존재하지 않습니다.')
             }
         })
     })
