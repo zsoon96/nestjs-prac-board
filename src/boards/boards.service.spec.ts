@@ -58,7 +58,7 @@ describe('BoardService',  () => {
         // boardRepository = module.get<MockRepository<BoardRepository>>(getRepositoryToken(BoardRepository))
     })
 
-    it ('게시글 등록 성공', async () => {
+    describe('createBoard', () => {
         // Given
         const createDto = {
             title: '제목',
@@ -78,21 +78,38 @@ describe('BoardService',  () => {
             user: user
         }
 
-        // 가짜 데이터 주입
-        customBoardRepository.createBoard.mockResolvedValue(newBoard)
-        // customBoardRepository.createBoard.mockResolvedValue(
-        //     { title: createDto.title, description: createDto.description, user: user}
-        // )
+        it ('게시글 등록 성공', async () => {
+            // 가짜 데이터 주입
+            customBoardRepository.createBoard.mockResolvedValue(newBoard)
+            // customBoardRepository.createBoard.mockResolvedValue(
+            //     { title: createDto.title, description: createDto.description, user: user}
+            // )
 
-        // customBoardRepository.create.mockResolvedValue(newBoard)
-        // customBoardRepository.save.mockResolvedValue(newBoard)
+            // customBoardRepository.create.mockResolvedValue(newBoard)
+            // customBoardRepository.save.mockResolvedValue(newBoard)
 
-        // when
-        const result = await service.createBoard(createDto, user)
+            // when
+            const result = await service.createBoard(createDto, user)
 
-        // then
-        expect(result).toEqual(newBoard);
-    })
+            // then
+            expect(result).toEqual(newBoard);
+        })
+
+        it ('게시글 등록 실패', async () => {
+            customBoardRepository.createBoard.mockResolvedValue(newBoard)
+            customBoardRepository.create.mockRejectedValue(newBoard)
+            customBoardRepository.save.mockRejectedValue(newBoard)
+
+            try {
+                const result = await service.createBoard(createDto, user)
+                expect(result).toBeDefined()
+            } catch (err) {
+                console.error(err)
+                expect(err.status).toBe(400)
+                expect(err.response.message).toBe('입력값을 확인해주세요.')
+            }
+        })
+    });
 
     // controller에 적용 후 테스트 확인
     it('title 유효성 검사', async () => {
