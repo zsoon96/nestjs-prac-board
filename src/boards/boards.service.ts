@@ -10,8 +10,8 @@ export class BoardsService {
     constructor(private boardRepository: BoardRepository) {}
 
     // 게시글 전체 조회 처리 로직
-    async getAllBoard() : Promise<Board[]> {
-        return await this.boardRepository.find();
+    async getAllBoard() {
+        return await this.boardRepository.getAllBoard();
     }
 
     // 게시글 생성 처리 로직
