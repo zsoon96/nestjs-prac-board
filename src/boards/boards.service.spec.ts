@@ -17,6 +17,7 @@ const mockCustomRepository = () => ({
     createBoard: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+    getAllBoard: jest.fn(),
     find: jest.fn()
 })
 
@@ -104,7 +105,6 @@ describe('BoardService',  () => {
                 const result = await service.createBoard(createDto, user)
                 expect(result).toBeDefined()
             } catch (err) {
-                console.error(err)
                 expect(err.status).toBe(400)
                 expect(err.response.message).toBe('입력값을 확인해주세요.')
             }
@@ -137,15 +137,39 @@ describe('BoardService',  () => {
     })
 
 
-    it('게시글 전체조회 성공', async () => {
-        // given
-        customBoardRepository.find.mockResolvedValue([])
+    describe('getAllBoard', () => {
+        const boardList = [
+            {
+                id: 1,
+                title: '제목1',
+                description: '내용1'
+            }
+        ]
+        it('게시글 전체조회 성공', async () => {
+            // given
+            customBoardRepository.getAllBoard.mockResolvedValue(boardList)
 
-        // when
-        const result = await service.getAllBoard()
+            // when
+            const result = await service.getAllBoard()
 
-        // then
-        expect(customBoardRepository.find).toBeCalledTimes(1)
-        expect(result).toEqual([])
+            // then
+            expect(customBoardRepository.getAllBoard).toBeCalledTimes(1)
+            expect(result).toEqual(boardList)
+        })
+
+        it('존재하는 게시글이 없을 경우', async () => {
+            // given
+            customBoardRepository.getAllBoard.mockResolvedValue([])
+            customBoardRepository.find.mockRejectedValue([])
+
+            // when
+            try {
+                const result = await service.getAllBoard()
+                expect(result).toBeDefined()
+            } catch(err) {
+                expect(err.status).toBe(404)
+                expect(err.response.message).toBe('존재하는 게시글이 없습니다.')
+            }
+        })
     })
 })
