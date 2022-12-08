@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import {BoardRepository} from "./board.repository";
 import {Board} from "./board.entity";
 import {CreateBoardDto} from "./dto/create-board.dto";
@@ -55,11 +55,19 @@ export class BoardsService {
     async updateBoardContent(id: number, title:string, description:string, status: BoardStatus) : Promise<Board> {
         const board = await this.boardRepository.findOneBy({id});
 
+        if (!board) {
+            throw new NotFoundException('해당 게시글이 존재하지 않습니다.')
+        }
+
         board.title = title;
         board.description = description;
         board.status = status;
 
-        await this.boardRepository.save(board);
+        try {
+            await this.boardRepository.save(board);
+        } catch (err) {
+            throw new InternalServerErrorException('게시글 저장에 실패하였습니다.')
+        }
 
         return board;
     }
