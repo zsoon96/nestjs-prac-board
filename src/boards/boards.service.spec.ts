@@ -5,6 +5,7 @@ import {plainToInstance} from "class-transformer";
 import {CreateBoardDto} from "./dto/create-board.dto";
 import {validate} from "class-validator";
 import {stringify} from "ts-jest";
+import {BoardStatus} from "./board-status.enum";
 
 // repository 관련 가짜 함수 정의
 // const mockRepository = () => ({
@@ -137,7 +138,6 @@ describe('BoardService',  () => {
         expect(stringify(errors)).toContain('title should not be empty')
     })
 
-
     describe('getAllBoard', () => {
         const boardList = [
             {
@@ -206,6 +206,32 @@ describe('BoardService',  () => {
                 expect(err.status).toBe(404)
                 expect(err.response.message).toBe('해당 게시글이 존재하지 않습니다.')
             }
+        })
+    })
+
+    describe('updateBoard', () => {
+        const updateBoardDto = {
+            id: 1,
+            title: '제목 수정',
+            description: '내용 수정',
+            status: BoardStatus.PRIVATE
+        }
+
+        it('게시글 수정 성공', async () => {
+            const mockBoard = {
+                id: 1,
+                title: '기존 제목',
+                description: '기존 내용',
+                status: BoardStatus.PUBLIC
+            }
+
+            // customBoardRepository.save.mockResolvedValue(mockBoard)
+            customBoardRepository.findOneBy.mockResolvedValue(mockBoard)
+            customBoardRepository.save.mockResolvedValue(updateBoardDto)
+
+            const result = await service.updateBoardContent(updateBoardDto.id, updateBoardDto.title, updateBoardDto.description, updateBoardDto.status)
+
+            expect(result).toEqual(updateBoardDto)
         })
     })
 })
