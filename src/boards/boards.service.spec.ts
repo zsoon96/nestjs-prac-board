@@ -196,7 +196,7 @@ describe('BoardService',  () => {
             expect(result).toEqual(mockBoard)
         })
 
-        it('게시글 상세조회 실패', async () => {
+        it('조회하고자 하는 게시물이 존재하지 않을 경우', async () => {
             customBoardRepository.findOneBy.mockResolvedValue(undefined)
 
             try {
@@ -217,14 +217,14 @@ describe('BoardService',  () => {
             status: BoardStatus.PRIVATE
         }
 
-        it('게시글 수정 성공', async () => {
-            const mockBoard = {
-                id: 1,
-                title: '기존 제목',
-                description: '기존 내용',
-                status: BoardStatus.PUBLIC
-            }
+        const mockBoard = {
+            id: 1,
+            title: '기존 제목',
+            description: '기존 내용',
+            status: BoardStatus.PUBLIC
+        }
 
+        it('게시글 수정 성공', async () => {
             // customBoardRepository.save.mockResolvedValue(mockBoard)
             customBoardRepository.findOneBy.mockResolvedValue(mockBoard)
             customBoardRepository.save.mockResolvedValue(updateBoardDto)
@@ -232,6 +232,31 @@ describe('BoardService',  () => {
             const result = await service.updateBoardContent(updateBoardDto.id, updateBoardDto.title, updateBoardDto.description, updateBoardDto.status)
 
             expect(result).toEqual(updateBoardDto)
+        })
+
+        it('수정하고자 하는 게시물이 존재하지 않을 경우', async () => {
+            customBoardRepository.findOneBy.mockResolvedValue(undefined)
+
+            try {
+                const result = await service.updateBoardContent(updateBoardDto.id, updateBoardDto.title, updateBoardDto.description, updateBoardDto.status)
+                expect(result).toBeDefined()
+            } catch (err) {
+                expect(err.status).toBe(404)
+                expect(err.response.message).toBe('해당 게시글이 존재하지 않습니다.')
+            }
+        })
+
+        it('게시물 저장 시 문제가 발생할 경우', async () => {
+            customBoardRepository.findOneBy.mockResolvedValue(mockBoard)
+            customBoardRepository.save.mockRejectedValue(updateBoardDto)
+
+            try {
+                const result = await service.updateBoardContent(updateBoardDto.id, updateBoardDto.title, updateBoardDto.description, updateBoardDto.status)
+                expect(result).toBeDefined()
+            } catch (err) {
+                expect(err.status).toBe(500)
+                expect(err.response.message).toBe('게시글 저장에 실패하였습니다.')
+            }
         })
     })
 })
