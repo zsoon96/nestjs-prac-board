@@ -20,7 +20,8 @@ const mockCustomRepository = () => ({
     save: jest.fn(),
     getAllBoard: jest.fn(),
     find: jest.fn(),
-    findOneBy: jest.fn()
+    findOneBy: jest.fn(),
+    delete: jest.fn()
 })
 
 // MockRepository 타입 정의
@@ -256,6 +257,42 @@ describe('BoardService',  () => {
             } catch (err) {
                 expect(err.status).toBe(500)
                 expect(err.response.message).toBe('게시글 저장에 실패하였습니다.')
+            }
+        })
+    })
+
+    describe('deleteBoard', () => {
+        const boardId = 1
+        const user = {
+            id: 1,
+            name: 'name'
+        }
+        it ('게시글 삭제 성공', async () => {
+            const deleteResult = {
+                affected: 1
+            }
+
+            customBoardRepository.delete.mockResolvedValue(deleteResult)
+
+            const result = await service.deleteBoard(boardId, user)
+
+            expect(result).toBe(undefined)
+            expect(customBoardRepository.delete).toBeCalled()
+        })
+
+        it ('작성자가 아닐 경우', async () => {
+            const deleteResult = {
+                affected: 0
+            }
+
+            customBoardRepository.delete.mockResolvedValue(deleteResult)
+
+            try {
+                const result = await service.deleteBoard(boardId, user)
+                expect(result).toBeDefined()
+            } catch (err) {
+                expect(err.status).toBe(404)
+                expect(err.response.message).toBe('작성자만 삭제 가능합니다.')
             }
         })
     })
