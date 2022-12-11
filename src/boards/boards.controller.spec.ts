@@ -129,4 +129,37 @@ describe('BoardsController', () => {
             }
         })
     })
+
+    describe('GET - getBoardById',   () => {
+        const mockBoard = {
+            id: 1,
+            title: '제목1',
+            description: '내용1',
+            status: BoardStatus.PUBLIC,
+            user: {
+                id: 1,
+                name: 'user1'
+            }
+        }
+        it ('게시글 상세조회 통신 - 정상 조회', async () => {
+            service.getBoardById.mockResolvedValue(mockBoard)
+
+            const result = await controller.getBoardById(mockBoard.id)
+
+            expect(result).toBeDefined()
+            expect(result).toStrictEqual(mockBoard)
+            expect(service.getBoardById).toBeCalled()
+        })
+
+        it ('게시글 상세조회 통신 - 조회 실패', async () => {
+            service.getBoardById.mockRejectedValue(new NotFoundException())
+
+            try {
+                const result = await controller.getBoardById(mockBoard.id)
+                expect(result).toBeDefined()
+            } catch (err) {
+                expect(err).toBeInstanceOf(NotFoundException)
+            }
+        })
+    });
 })
