@@ -5,7 +5,7 @@ import {PassportModule} from "@nestjs/passport";
 import {JwtModule} from "@nestjs/jwt";
 import {BoardStatus} from "./board-status.enum";
 import {BoardRepository} from "./board.repository";
-import {BadRequestException, NotFoundException} from "@nestjs/common";
+import {BadRequestException, InternalServerErrorException, NotFoundException} from "@nestjs/common";
 
 const mockService = () => ({
     getAllBoard: jest.fn(),
@@ -141,6 +141,7 @@ describe('BoardsController', () => {
                 name: 'user1'
             }
         }
+
         it ('게시글 상세조회 통신 - 정상 조회', async () => {
             service.getBoardById.mockResolvedValue(mockBoard)
 
@@ -162,4 +163,53 @@ describe('BoardsController', () => {
             }
         })
     });
+
+    describe('PATCH - updateBoardContent', () => {
+        const mockBoard = {
+            id: 1,
+            title: '제목1',
+            description: '내용1',
+            status: BoardStatus.PUBLIC,
+            user: {
+                id: 1,
+                name: 'user1'
+            }
+        }
+        const id = mockBoard.id
+        const title = mockBoard.title
+        const description = mockBoard.description
+        const status = mockBoard.status
+
+        it ('게시글 수정 통신 - 정상 수정', async () => {
+            service.updateBoardContent.mockResolvedValue(mockBoard)
+
+            const result = await controller.updateBoardContent(id, title, description, status);
+
+            expect(result).toBeDefined()
+            expect(result).toStrictEqual(mockBoard)
+            expect(service.updateBoardContent).toBeCalled()
+        })
+
+        it ('게시글 수정 통신 - 조회 실패', async () => {
+            service.updateBoardContent.mockResolvedValue(new NotFoundException())
+
+            try {
+                await controller.updateBoardContent(id, title, description, status);
+            } catch (err) {
+                expect(service.updateBoardContent).toBeCalled()
+                expect(err).toBeInstanceOf(NotFoundException)
+            }
+        })
+
+        it ('게시글 수정 통신 - 저장 실패', async () => {
+            service.updateBoardContent.mockResolvedValue(new InternalServerErrorException())
+
+            try {
+                await controller.updateBoardContent(id, title, description, status);
+            } catch (err) {
+                expect(service.updateBoardContent).toBeCalled()
+                expect(err).toBeInstanceOf(InternalServerErrorException)
+            }
+        })
+    })
 })
