@@ -212,4 +212,32 @@ describe('BoardsController', () => {
             }
         })
     })
+
+    describe ('DELETE - deleteBoard', () => {
+        const id = 1
+        const mockUser = {
+            id: 1,
+            name: 'user'
+        }
+
+        it ('게시글 삭제 통신 - 정상 삭제', async () => {
+            service.deleteBoard.mockResolvedValue(undefined)
+
+            const result = await controller.deleteBoard(id, mockUser)
+
+            expect(result).toBeUndefined()
+            expect(service.deleteBoard).toBeCalled()
+        })
+
+        it ('게시글 삭제 통신 - 삭제 실패', async () => {
+            service.deleteBoard.mockResolvedValue(new NotFoundException())
+
+            try {
+                await controller.deleteBoard(id, mockUser)
+            } catch (err) {
+                expect(err).toBeInstanceOf(NotFoundException)
+                expect(service.deleteBoard).toBeCalled()
+            }
+        })
+    })
 })
