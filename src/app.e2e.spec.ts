@@ -1,8 +1,9 @@
 import {Test, TestingModule} from "@nestjs/testing"
-import {DynamicModule, INestApplication} from "@nestjs/common";
+import {DynamicModule, INestApplication, ValidationPipe} from "@nestjs/common";
 import * as request from 'supertest';
 import {AppModule} from "src/app.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
+import {CreateBoardDto} from "./boards/dto/create-board.dto";
 
 // 테스트 서버 설정
 export function getTestMysqlModule(): DynamicModule {
@@ -30,7 +31,12 @@ describe ('BoardsController e2e test', () => {
 
         // 컴파일 후, app 생성 및 초기화
         app = module.createNestApplication()
+        app.useGlobalPipes(new ValidationPipe())
         await app.init()
+    })
+
+    afterAll( async() => {
+        await app.close()
     })
 
     it ('Get - /boards', () => {
@@ -39,5 +45,23 @@ describe ('BoardsController e2e test', () => {
             .get('/boards')
             .expect(200)
             // .expect([])
+    })
+
+    it ('POST - /boards', () => {
+        const createBoardDto: CreateBoardDto = {
+            title: '제목',
+            description: '내용'
+        }
+
+        const user: User = {
+            id: 1,
+            name: '사용자'
+        }
+
+        return request(app.getHttpServer())
+            .post('/boards')
+            .send(createBoardDto)
+            .send(user)
+            .expect(201)
     })
 })
